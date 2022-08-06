@@ -1,29 +1,19 @@
-# Least squares for programmers
-### with illustrations
+# Least squares for programmers with illustrations 程序员的最小二乘法可视化教程
 
-This repository contains the [course notes](https://github.com/ssloy/least-squares-course/blob/master/manuscript.pdf) as well as the [source code](https://github.com/ssloy/least-squares-course/tree/master/src) for the long course I gave at SIGGRAPH 2021.
+本仓库是[SIGGRAPH 2021 课程](https://github.com/ssloy/least-squares-course)的个人翻译。
 
-You can find the full video of the course on youtube:
-[![](https://raw.githubusercontent.com/ssloy/least-squares-course/master/presentation/screenshot.jpg)](https://youtu.be/ZDh3v8OAEIA)
+原作者：[Dmitry Sokolov](https://members.loria.fr/DSokolov/)，[Nicolas Ray](https://members.loria.fr/NRay/)，[Etienne Corman](https://members.loria.fr/ECorman/)
 
-This course explains least squares optimization, nowadays a simple and well-mastered technology.
-We show how this simple method can solve a large number of problems that would be difficult to approach in any other way.
-This course provides a simple, understandable yet powerful tool that most coders can use,
-in the contrast with other algorithms sharing this paradigm (numerical simulation and deep learning) which are more complex to master.
+课程源码：[source code](https://github.com/ssloy/least-squares-course/tree/master/src)
 
-Linear regression is often underestimated being considered only as a sub-domain of statistics / data analysis, but it is much more than that.
-We propose to discover how the same method (least squares) applies to the manipulation of geometric objects.
-This first step into the numerical optimization world can be done without strong applied mathematics background;
-while being simple, this step suffices for many applications, and is a good starting point for learning more advanced algorithms.
-We strive to communicate the underlying intuitions through numerous examples of classic problems, we show different choices of variables and the ways the energies are built.
-Over the last two decades, the geometry processing community have used it for computing 2D maps, deformations, geodesic paths, frame fields, etc.
-Our examples provide many examples of applications that can be directly solved by the least squares method.
-Note that linear regression is an efficient tool that has deep connections to other scientific domains;
-we show a few such links to broaden reader's horizons.
+课程视频：[![](https://raw.githubusercontent.com/ssloy/least-squares-course/master/presentation/screenshot.jpg)](https://youtu.be/ZDh3v8OAEIA)
 
-This course is intended for students/engineers/researchers who know how to program in the traditional way:
-by breaking down complex tasks into elementary operations that manipulate combinatorial structures (trees, graphs, meshes...).
-Here we present a different paradigm, in which we describe what a good result looks like, and let numerical optimization algorithms find it for us.
+
+本课程介绍一种简单易学的技术：最小二乘优化。我们会展示这种简单的方法如何解决大量其他方法难以驾驭的问题。本课程提供了一套简单、易于理解的强大工具，大多数程序员可以轻松上手。与此相对，其他采用最小二乘范式的复杂算法（如数值模拟、深度学习）更难掌握。
+
+线性回归（Linear regression）通常被低估为统计学或数据分析的一个子领域，但它的内涵远不止于此。我们会挖掘用同样的方法（最小二乘）来操作几何体。进入数值优化世界的第一步并不需要很强的应用数学背景。迈出的第一步虽然很简单，但却有很多应用场景，更是之后学习更高阶算法的起点。我们致力于用大量经典问题的例子来传递底层直觉。我们会展示变量的不同选择和能量的构建方式。在过去的二十余年，几何处理领域已经用最小二乘法来计算二维地图、形变、测地路径、标价场等问题。我们的例子提供了许多可以直接用最小二乘法求解的应用实例。注意线性回归是一个和许多其他科学领域有深刻联系的工具，我们提供了一些这样的参考来开阔读者的视野。
+
+本课程面向了解如何用传统方式编程的学生/工程师/研究人员: 通过将复杂任务分解为操作组合结构(树、图、网格……)的基本操作。我们提出了一种不同的范式。在这种范式中，我们描述了一个好的结果是什么样的，并用数值优化算法来寻找结果。
 
 ![](https://raw.githubusercontent.com/ssloy/least-squares-course/master/manuscript/img/caricature.jpg)
 
