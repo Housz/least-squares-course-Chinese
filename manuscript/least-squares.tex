@@ -33,6 +33,7 @@
 \usepackage[T2A]{fontenc}
 \usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
+\usepackage[UTF8]{ctex}
 
 \usepackage{wrapfig}
 
@@ -589,19 +590,17 @@ Next we will try to build a geometric intuition on least squares, and see how ca
 
 
 \authoredby{B}
-\chapter{Introduction to systems of linear equations}
+\chapter{线性方程系统介绍}
 \fancyhead[R]{\textcolor{ao(english)}{core text}}
 \label{ch:linsyst}
 
-\section{Smooth an array}
+\section{光滑一个数组}
 \label{sec:arraysmooth}
-The time has come to write some code. Let us examine the following Python program:
+是时候写点代码了。 来看看下面的Python代码：
 \inputminted[frame=single,linenos=true]{python}{listings/example_3.1.py}
-We start from a 16 elements array, and we iterate over and over a simple procedure: we replace each element with a barycenter of its neighbours;
-the first and the last element are fixed. What should we get at the end? Does it converge or would it oscillate infinitely?
-Intuitively, each peak in the signal is cut out, and therefore the array will be smoothed over time.
-Top left image of the Figure~\ref{fig:linsys_smooth} shows the initialization of the array \mintinline{python}{x},
-other images show the evolution of the data.
+我们先定义了一个16个元素的数组，然后做一个简单的迭代过程：把每个元素换成它的两个邻居的重心（平均值），开头和结尾的元素保持不变。最后会得到的数组会是什么样的？它会收敛还是无限振荡下去？
+直观来说，信号的每个峰值都被切掉了，因此数组会越来越光滑。
+图\ref{fig:linsys_smooth} 左上角展示了数组\mintinline{python}{x}的初始状态，其他图片展示了数据的演化过程。
 
 \begin{figure}[ht]
     \centering
@@ -615,11 +614,11 @@ other images show the evolution of the data.
     \label{fig:linsys_smooth}
 \end{figure}
 
-Is there a way to predict the result without guessing or executing the program? The answer is yes; but first let us recall how to solve systems of linear equations.
+是否有一种方法可以不用猜测或者运行程序就能预测结果？答案是肯定的，首先来让我们回忆一下线性方程组的解法。
 
-\section{The Jacobi and Gauß-Seidel iterative methods}
+\section{Jacobi 和 Gauß-Seidel 迭代法}
 \label{sec:gauss-seidel}
-Let us suppose that we have an ordinary system of linear equations:
+设有如下线性方程系统：
 $$
 \left\{
 \begin{array}{cccccccc}
@@ -630,7 +629,7 @@ a_{n1}x_1 & + &  a_{n2}x_2  &+      & \cdots & + & a_{nn}x_n &= b_n\\
 \end{array}
 \right.
 $$
-It can be rewritten by leaving  $x_i$ only on the left side of the equations:
+整理一下形式，把 $x_i$ 都放到方程左边：
 \begin{align*}
 x_1 &= \frac{1}{a_{11}}(b_1 - a_{12}x_2 - a_{13}x_3 - \cdots - a_{1n}x_n)\\
 x_2 &= \frac{1}{a_{22}}(b_2 - a_{21}x_1 - a_{23}x_3 - \cdots - a_{2n}x_n)\\
@@ -638,9 +637,9 @@ x_2 &= \frac{1}{a_{22}}(b_2 - a_{21}x_1 - a_{23}x_3 - \cdots - a_{2n}x_n)\\
 x_n &= \frac{1}{a_{nn}}(b_n - a_{n1}x_1 - a_{n2}x_2 - \cdots - a_{n,n-1}x_{n-1})
 \end{align*}
 
-Suppose that we have an arbitrary vector $\vec{x}^{(0)}=\left(x_1^{(0)}, x_2^{(0)}, \dots, x_n^{(0)}\right)$, approximating the solution (an initial guess, for example, a zero vector).
-Then, if we plug it into the right side of the equations, we can compute an updated approximated solution $\vec{x}^{(1)}=\left(x_1^{(1)}, x_2^{(1)}, \dots, x_n^{(1)}\right)$.
-In other words, $\vec{x}^{(1)}$ is derived from $\vec{x}^{(0)}$ as follows:
+假设有一个任意向量 $\vec{x}^{(0)}=\left(x_1^{(0)}, x_2^{(0)}, \dots, x_n^{(0)}\right)$, 作为近似解（初始猜测值，例如零向量）。
+然后把其代入方程组右端，我们就能计算出更新后的近似解 $\vec{x}^{(1)}=\left(x_1^{(1)}, x_2^{(1)}, \dots, x_n^{(1)}\right)$.
+即 $\vec{x}^{(1)}$ 是用 $\vec{x}^{(0)}$ 计算得到： 
 \begin{align*}
 x_1^{(1)} &= \frac{1}{a_{11}}(b_1 - a_{12}x_2^{(0)} - a_{13}x_3^{(0)} - \cdots - a_{1n}x_n^{(0)})\\
 x_2^{(1)} &= \frac{1}{a_{22}}(b_2 - a_{21}x_1^{(0)} - a_{23}x_3^{(0)} - \cdots - a_{2n}x_n^{(0)})\\
@@ -648,17 +647,17 @@ x_2^{(1)} &= \frac{1}{a_{22}}(b_2 - a_{21}x_1^{(0)} - a_{23}x_3^{(0)} - \cdots -
 x_n^{(1)} &= \frac{1}{a_{nn}}(b_n - a_{n1}x_1^{(0)} - a_{n2}x_2^{(0)} - \cdots - a_{n,n-1}x_{n-1}^{(0)})
 \end{align*}
 
-Repeating the process $k$ times, the solution can be approximated by the vector $\vec{x}^{(k)}=\left(x_1^{(k)}, x_2^{(k)}, \dots, x_n^{(k)}\right)$.
-Let us write down the recursive formula just in case:
+重复这个过程 $k$ 次，方程的解可被近似为 $\vec{x}^{(k)}=\left(x_1^{(k)}, x_2^{(k)}, \dots, x_n^{(k)}\right)$.
+我们把这一过程用递归式写出：
 $$
 x_i^{(k)} = \frac{1}{a_{ii}} \left(b_i - \sum\limits_{j=1,j\neq i}^n a_{ij}x_j^{(k-1)} \right), \quad \text{for } i=1,2,\dots,n
 $$
 
-Under some assumptions about the system (for example, it is quite obvious that diagonal elements must not be zero), this procedure converges to the true solution.
-This iteration is known as the Jacobi method.
-Of course, there are other much more powerful numeric methods, for example, the conjugate gradient method, but the Jacobi method is the simplest one.
+在满足一般假设的前提下（例如对角线元素显然非零），这个过程收敛于真实解。
+这就是大名鼎鼎 Jacobi 迭代法。当然还有一些更高级的数值方法（例如共轭梯度法），但 Jacobi 迭代是最简单直观的一种。
 
-What is the connection with the code from \S\ref{sec:arraysmooth}? It turns out that the program solves the following system with the Jacobi method:
+
+这和 \S\ref{sec:arraysmooth} 的代码有什么关联？ 事实上这个程序本质是用 Jacobi 迭代求解了如下系统：
 \begin{equation}
 \label{eq:1d:smooth}
 \left\{
@@ -673,21 +672,19 @@ x_{15} &= 1 \\
 \end{array}
 \right.
 \end{equation}
-Do not take my word for it, grab a pencil and verify it!
-So, if we consider the array as a sampled function, the linear system prescribes a constant derivative and fixes the extremities, therefore the result can only be a straight line.
+不信的话去拿支笔验证一下！
+实际上我们把数组看作一采样函数，这个线性系统规定了一个常数导数并固定了两端，因此迭代的结果只能是一条直线。
 
-There is a very interesting modification of the Jacobi method, named after Johann Carl Friedrich Gauß and Philipp Ludwig von Seidel.
-This modification is even easier to implement than the Jacobi method, and it often requires fewer iterations to produce the same degree of accuracy.
-With the Jacobi method, the values of obtained in the $k$-th approximation remain unchanged until the entire
-$k$-th approximation has been calculated. With the Gauß-Seidel method, on the other hand, we use the new values of each as soon as they are known.
-The recursive formula can be written as follows:
+有一种对 Jacobi 迭代法非常有意思的修改，以 Johann Carl Friedrich Gauß 和 Philipp Ludwig von Seidel 来命名。这种修改甚至比 Jacobi 方法更容易实现，且通常需要更少的迭代步数就能达到相同程度的精度。在 Jacobi 迭代中，整个第 $k$ 步所有的值都被计算完后才能整体更新近似解。而在使用 Gauß-Seidel 方法时，只要知道了一个值，我们就会使用它们的新值来更新其他值。
+递归公式可以写成:
 $$
 x_i^{(k)} = \frac{1}{a_{ii}} \left(b_i - \sum\limits_{j=1}^{i-1} a_{ij}x_j^{(k)} -  \sum\limits_{j=i+1}^n a_{ij}x_j^{(k-1)} \right), \quad \text{for } i=1,2,\dots,n
 $$
 
-It allows to perform all the computations in place. The following program solves the same equation~\eqref{eq:1d:smooth} by the Gauß-Seidel method:
+这能原地进行所有的计算。下面的代码是用 Gauß-Seidel 迭代求解同样的方程~\eqref{eq:1d:smooth}
+
 \inputminted[frame=single,linenos=true]{python}{listings/example_3.2.py}
-Figure~\ref{fig:arraysmooth_gs} shows the behaviour of this program.
+图~\ref{fig:arraysmooth_gs} 展示了这一过程。
 
 \begin{figure}[ht]
     \centering
@@ -701,14 +698,14 @@ Figure~\ref{fig:arraysmooth_gs} shows the behaviour of this program.
     \label{fig:arraysmooth_gs}
 \end{figure}
 
-\section{Smoothing a 3D surface}
+\section{光滑一个三维曲面}
 \label{sec:3dsmooth}
-There is no much fun in studying small 1D arrays, let us play with a triangulated surface! The following listing is a direct equivalent of the previous one:
+只研究一维数组有些无趣，让我们来玩一下三角化的曲面！下面的代码是之前代码的三维版本：
 \inputminted[frame=single,linenos=true]{python}{listings/example_3.3.py}
-All boundary vertices are fixed, and all the interiour vertices are iteratively placed in the barycenter of their immediate neighbors.
-Can you predict the result?
+所有边界顶点都是固定的，所有内部顶点都迭代地放置在其相邻顶点的重心（邻居的平均值）上。
+你能猜到结果是什么样的吗？
 
-First of all, let us see that the system \eqref{eq:1d:smooth} can be rewritten as follows:
+首先让我们把 \eqref{eq:1d:smooth} 整理为:
 \begin{equation}
 \label{eq:1d:smooth-laplacian}
 \left\{
@@ -725,14 +722,14 @@ First of all, let us see that the system \eqref{eq:1d:smooth} can be rewritten a
 \end{array}
 \right.
 \end{equation}
-You can see the pattern for the second-order finite difference.
-Computing a constant derivative function is equivalent to computing a function with zero second derivative, it is only logic that the result is a straight line.
+可以看到这正是二阶有限差分的格式。
+函数的一阶导数为常数等价于二阶导数为零，求解的结果只能是一条直线。
 
-It is all the same for our 3D surface, the above code solves the Laplace's equation $\Delta f = 0$ with Dirichlet boundary conditions.
-Again, do not trust me, grab a pencil and write down the corresponding matrix for a mesh with one interior vertex.
-So, the result must be the minimal surface respecting the boundary conditions.
-In other words, make a loop from a rigid wire, soak it in a liqud soap, the soap film on this loop is the solution.
-Figure~\ref{fig:minsurface} provides an illustration.
+对于三维空间的曲面也是类似的，上面的代码其实就是在求解迪利克雷边界的拉普拉斯方程 $\Delta f = 0$。
+请再次拿起笔，尝试写出一个内部只有一个顶点的网格所对应的矩阵。
+求解结果必然是满足边界条件的极小曲面。
+换句话说，用一根铁丝做一个环，把它浸泡在肥皂液中，环上的肥皂膜就是这个铁环的极小曲面。
+图~\ref{fig:minsurface} 展示了曲面平滑的过程.
 \begin{figure}[ht]
     \centering
     \includegraphics[width=.2\linewidth]{img/example_3_3_0.jpg}
@@ -744,13 +741,12 @@ Figure~\ref{fig:minsurface} provides an illustration.
 
 
 
-\section{Prescribe the right hand side}
+\section{修改右端项}
 \label{sec:rhs}
 
-Let us return to the equation~\eqref{eq:1d:smooth-laplacian}, but this time the right hand side would not be zero:
+让我们再回到方程~\eqref{eq:1d:smooth-laplacian}，但这次要把右端项改为非零：
 \inputminted[frame=single,linenos=true]{python}{listings/example_3.4.py}
-What is the result of this program? Well, it is easy to answer. We are looking for a function whose second derivative is a linear function,
-therefore the solution must be a cubic polynomial. Figure~\ref{fig:linsys-cubic} shows the evolution of the array, the ground truth polynomial is shown in green.
+这个代码的运行结果会是什么样？这很好回答，我们正在寻找一个二阶导为线性函数的函数，因此结果是一个三次函数。图~\ref{fig:linsys-cubic} 展示了数组的变化过程，真实值用绿线表示。
 
 \begin{figure}[ht]
     \centering
@@ -764,7 +760,7 @@ therefore the solution must be a cubic polynomial. Figure~\ref{fig:linsys-cubic}
     \label{fig:linsys-cubic}
 \end{figure}
 
-Congratulations, you have just solved a Poisson's equation!
+恭喜！你刚刚成功求解了泊松方程！
 
 %\section{3D example}
 %\begin{figure}[ht]
@@ -1170,7 +1166,7 @@ It turns out that in the case of a symmetric positive definite matrix $A$ both s
 the following chapter is dedicated to this remarkable fact.
 
 \authoredby{B}
-\chapter{Minimization of quadratic functions and linear systems}
+\chapter{最小化二次函数和线性系统}
 \fancyhead[R]{\textcolor{ao(english)}{core text}}
 \label{sec:mineqlin}
 
@@ -1178,7 +1174,7 @@ Recall that the main goal is to study least squares, therefore our main tool wil
 however, before we start using this power tool, we need to find where its on/off button is located.
 First of all, we need to recall what a matrix is; then we will revisit the definition of a positive numbers, and only then we will attack minimization of quadratic functions.
 
-\section{Matrices and numbers}
+\section{矩阵与数字}
 In this sections, matrices will be omnipresent, so let's remember what it is.
 Do not peek further down the text, pause for a few seconds, and try to formulate what the matrix is.
 
@@ -1332,7 +1328,7 @@ x^\top M x = x^\top (M_s + M_a) x = x^\top M_s x  + x^\top M_a x = x^\top M_s x.
 $$
 
 
-\section{Minimizing a quadratic function}
+\section{最小化二次函数}
 
 \begin{figure}[ht]
 	\centering
@@ -1414,7 +1410,7 @@ Hurray, passing from one variable to many, we have not lost a thing, and can eff
 
 %$$\argmin (x^\top A x - 2b^\top x) = A^{-1}b$$
 
-\section{Back to the least squares}
+\section{回到最小二乘}
 Finally we can move on to the main content of this course. Imagine that we have two points on a plane
 $(x_1, y_1)$ and $(x_2, y_2)$, and we want to find an equation for the line passing through these two points.
 The equation of the line can be written as $y = \alpha x + \beta$, that is, our task is to find the coefficients $\alpha$ and $\beta$.
@@ -1562,7 +1558,8 @@ with (in general) a symmetric positive definite matrix $A'$, which in turn is eq
 %\chapter{Finite elements example: the Ritz method}
 
 
-\chapter{Least squares through examples}
+
+\chapter{举例说明最小二乘}
 
 \section{Linear-quadratic regulator}
 \label{sec:lqr}
@@ -1982,7 +1979,7 @@ Refer to Listing~\ref{listing:arap} for the source code.
 
 
 \authoredby{A}
-\chapter{Under the hood of the conjugate gradient method}
+\chapter{揭开共轭梯度法的神秘面纱}
 \fancyhead[R]{\textcolor{blue}{optional reading}}
 
 
@@ -2005,7 +2002,7 @@ We will also illustrate the behaviour of these algorithms under the most common 
 
 
 
-\section{Problem statement}
+\section{问题定义}
 
 The conjugate gradient method solves the following problem:
 
@@ -2048,7 +2045,7 @@ As we will see shortly, iterative methods are the technique of the choice for so
 
 
 
-\section{Three ways to solve the problem}
+\section{三种解决方法}
 \label{chap5:sec:linalg:formulations_pb}
 
 Since we want to perform an unconstrained minimization of a convex function, it is only natural to use an iterative descent method.
@@ -2079,7 +2076,7 @@ The conjugate gradient is a gradient descent in which the directions of descent 
 
 \newpage
 
-\section{The 1st way: the gradient descent}
+\section{第一种方法：梯度下降}
 \label{chap5:sec:linalg:descente_gradient}
 
 The gradient of a function gives the direction of fastest increase.
@@ -2169,7 +2166,7 @@ To sum up, \textit{the gradient descent is a very simple method, and has a very 
 After few iterations, its behaviour becomes very sensitive to the matrix conditioning.}
 
 
-\section{The 2nd way: the (naïve) conjuguation method}
+\section{第二种方法：朴素的共轭梯度法}
 \label{chap5:sec:linalg:algo_conjugaison}
 
 Let us put aside the minimization for a moment, and cosider a projection method that solves $Ax=b$ directly.
@@ -2351,7 +2348,7 @@ This algorithm should not be implemented because it is very inefficient.
 It forms, however a perfect basement for the conjugate gradient method.
 
 \newpage
-\section{The 3rd and final algorithm: the conjugate gradient}
+\section{第三种方法（终极方法）：共轭梯度法}
 \label{chap5:sec:linalg:algoGC}
 
 The conjugate gradient differs from the previous algorithm in the way it constructs the $r^{(k)}$.
@@ -2462,7 +2459,7 @@ we use $\beta^{(k+1)}$ instead of $\beta_k^{(k+1)}$ because all the other $\beta
 
 
 \newpage
-\section{Performance}
+\section{性能}
 
 In the absence of rounding errors, the conjugate gradient converges in $n$ iterations; each iteration requires only one matrix-vector multiplication of five dot products.
 In practice, the conjugate gradient is used on large sparse matrices as an iterative solver that is less sensitive to matrix conditioning than the gradient descent.
@@ -2576,7 +2573,7 @@ This behavior can be explained by the time needed for each constraint to influen
 The difficulty in solving problems with sparse matrix $A$ is strongly related to the maximum distance (w.r.t. the adjacency graph defined by $A$) at which a constraint can influence the solution.
 In fact, for a similar number of variables, 1D problems appear to be more difficult than 2D problems.
 
-\section{Chapter summary}
+\section{小结}
 The conjugate gradient was presented as the fusion of two methods (gradient and conjugation). 
 We saw what makes this method so effective, and observed its behaviour on classical problems in which $A$ is a sparse matrix. 
 
@@ -2610,7 +2607,8 @@ Let us summarize the content of the chapter:
 
 
 
-\chapter{From least squares to neural networks}
+
+\chapter{从最小二乘到神经网络}
 %Мы видим, что даже в случае одного или двух параметров и сравнительно простой нелинейной модели отыскание приемлемых оценок параметров путём решения всего лишь одного нормального уравнения оказывается вовсе не такой уж лёгкой задачей.
 %Если же параметров много, и модель становится более сложной, то решение нормальных уравнений может превратиться в чрезвычайно трудную задачу.
 %Для её решения, как правило, приходится применять итеративные методы.
@@ -2635,7 +2633,7 @@ Note that this chapter is marked as \textcolor{blue}{optional} for reading.
 We do not aim here to teach new tools / techniques, this chapter is here for cultural reasons.
 Anyhow, let us start with the simplest unidimensional problem.
 
-\section{Binary classification, the first attempt}
+\section{二分类，首次尝试}
 \label{sec:binarylinear}
 The most simple, standard and yet quite common machine learning problem is binary classification.
 Many very interesting and important problems can be reduced to it.
@@ -2678,7 +2676,7 @@ database entries even if the database is perfectly separable. We can fix the sit
 before we return to the classification.
 
 
-\section{Logistic growth model}
+\section{逻辑斯蒂增长模型}
 \label{sec:logistic-growth}
 Logistic growth functions are useful as models accounting for constraints placed on the growth.
 An example is a bacteria culture allowed to grow under initially ideal conditions, followed by less favorable conditions that inhibit growth.
@@ -2770,7 +2768,7 @@ Refer to Listing~\ref{listing:logistic-growth} for the source code; right image 
 by solving a series of least squares problems.
 
 
-\section{Back to the binary classification: the 2nd attempt}
+\section{回到二分类：第二次尝试}
 \label{sec:logistic1d}
 
 Surely, you have already guessed where all this is going: we will put the logistic function inside the binary classification example from \S\ref{sec:binarylinear}.
@@ -2851,7 +2849,7 @@ There are standard ways to overcome it, e.g., the Tikhonov regularization, whose
 in a zone where the Jacobian $J\vec{r}\left(b^{(k)}\right)$ is a fair approximation, but these tricks are out of the scope of this document.
 There is another way to do it: change the loss function in our neural network.
 
-\section{Logistic regression: the 3rd attempt to binary classification}
+\section{逻辑回归：二分类的第三次尝试}
 \label{sec:logistic-regression}
 
 Logistic regression is another technique borrowed by machine learning from the field of statistics.
@@ -2958,7 +2956,7 @@ Listing~\ref{listing:logistic-regression} contains the source code, whose result
 
 
 
-\section{Nonlinear decision boundaries: 3 neurons perceptron}
+\section{非线性决策边界：三层感知机}
 \label{sec:NN}
 Okay, now we have mastered the art of binary classification with linear decision boundaries.
 What about nonlinear boundaries? Refer to the right image of Figure~\ref{fig:neural} for an illustration.
@@ -3029,7 +3027,7 @@ We can negate all the weights without affecting the decision boundary\dots
 
 \appendix
 \authoredby{B}
-\chapter{Program listings}
+\chapter{代码列表}
 \fancyhead[R]{\textcolor{ao(english)}{core text}}
 
 %\begin{listing}[p]
