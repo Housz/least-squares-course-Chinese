@@ -1170,99 +1170,101 @@ the following chapter is dedicated to this remarkable fact.
 \fancyhead[R]{\textcolor{ao(english)}{core text}}
 \label{sec:mineqlin}
 
-Recall that the main goal is to study least squares, therefore our main tool will be the minimization of quadratic functions;
-however, before we start using this power tool, we need to find where its on/off button is located.
-First of all, we need to recall what a matrix is; then we will revisit the definition of a positive numbers, and only then we will attack minimization of quadratic functions.
+我们的主要目标是研究最小二乘，因此主要工具是二次函数的最小化。
+不过在开始使用这个电动工具之前，我们要先学会它的开关按钮在哪。
+首先我们要回顾一下什么是矩阵，然后要重新讨论一下正数的定义，这也才能开启二次函数最小化之门。
+
 
 \section{矩阵与数字}
-In this sections, matrices will be omnipresent, so let's remember what it is.
-Do not peek further down the text, pause for a few seconds, and try to formulate what the matrix is.
+在本节中，矩阵是无处不在的，所以我们要牢记它的定义。先别往下翻，试着暂停几秒来回忆矩阵是什么。
 
-\subsection{Different interpretations of matrices}
 
-The answer is very simple. A matrix is just a locker that stores stuff.
-Each piece of stuff lies in its own cell, cells are grouped in rows and columns.
-In our particular case, we store real numbers; for a programmer the easiest way to imagine a matrix $A$ is something like:
+\subsection{矩阵的不同定义}
+
+其实很简单，矩阵就是个用来存物品的储物柜。每件物品都被放在自己的单元格中，单元格被划分成照行和列。在我们的讨论范围里，存储的物品就是实数。对于程序员来说矩阵$A$就是二维数组：
+
 \begin{minted}{cpp}
 float A[m][n];
 \end{minted}
 
-Why would we need a storage like this? What does it describe?
-Maybe I will upset you, but the matrix by itself does not describe anything, it stores stuff.
-For example, you can store coefficients of a function in it.
-Let us put aside matrices for a second imagine that we have a number $a$. What does it mean?
-Who knows what it means\dots For example, it can be a coefficient inside a function that takes one number as an input and gives another number as an output:
+为啥我们需要一个这样的仓库？它描述了什么？
+可能会让你失望的是，矩阵并不会描述任何东西，它只会存储内容。
+例如，你可以用矩阵来存储一个函数的系数。
+让我们先把忘掉矩阵，假如现在有一个数字$a$，那么它的描述了什么？
+没人知道它描述了什么！举个例子，它可能是一个函数的某个系数，这个函数的以一个实数为输入，一个实数为输出：
 $$
 f(x) : \mathbb R \rightarrow \mathbb R
 $$
 
-One possible instance of such a function a mathematicion could write down as:
+例如我们可以用数学的语言来写出这么一个函数：
+
 $$
 f(x) = ax
 $$
 
-In the programmers' world it would look something like this:
+在程序员的世界里，这个函数看起来应该是：
 \begin{minted}[linenos=true]{cpp}
 float f(float x) {
     return a*x;
 }
 \end{minted}
 
-On the other hand, why this function and not another one? Let's take another one!
+那么这个以$a$为系数的函数能不能是其他样子呢？让我们来写另一个函数：
+
 $$
 f(x) = ax^2
 $$
-A programmer would write it like this:
+程序员的写法差不多是这样：
 \begin{minted}[linenos=true]{cpp}
 float f(float x) {
     return x*a*x;
 }
 \end{minted}
 
-One of these functions is linear and the other is quadratic. Which one is correct? 
-Neither one. The number $a$ does not define it, it just stores a value! 
-Build the function you need.
+这俩以$a$为系数的函数一个是线性的一个是二次的，那么哪个是正确的？ 没有啥正确不正确！
+数字$a$和你写的函数是什么样子并没有关系，它只是存储了一个值而已！只需要根据你的需求定义函数即可。
 
-The same thing happens to matrices, they give storage space when simple numbers (scalars) do not suffice, a matrix is a sort of an hyper-number.
-The addition and multiplication operations are defined over matrices just as over numbers.
+这类比到矩阵也是同理，当单个数字（标量）不够用的时候，矩阵就登场来存下更多的参数。
+矩阵的加法和乘法和标量并没有什么区别。（矩阵的除法有些复杂，但是某些时候也是可以被定义的。）
+
 %. The division is a bit more complicated, but in certain cases it can be defined too.
 
-Let us suppose that we have a $2\times 2$ matrix $A$:
+假如我们有一个 $2\times 2$ 的矩阵 $A$:
 $$
 A=\begin{bmatrix} a_{11} & a_{12} \\ a_{21} & a_{22}\end{bmatrix}
 $$
 
-The matrix does not mean anything by itself, for example, it can be interpreted as a linear function:
+这个矩阵并没有什么意义，但我们可以定义它为一个线性函数：
 $$
 f(x) : \mathbb R^2 \rightarrow \mathbb R^2, \quad f(x) = Ax
 $$
 
-Here goes the programmer's view on the function:
+我们转到程序员的视角来看这个函数：
 \begin{minted}[linenos=true]{cpp}
 vector<float> f(vector<float> x) {
     return vector<float>{a11*x[0] + a12*x[1],  a21*x[0] + a22*x[1]};
 }
 \end{minted}
 
-This function maps a two-dimensional vector to a two-dimensional vector.
-Graphically, it is convenient to imagine it as an image transformation: we give an input image, and the output is the stretched and/or rotated (maybe even mirrored!) version.
-The top row of Figure~\ref{fig:matrices} provides few different examples of this interpretation of matrices.
+这个函数把一个二维向量映射成一个二维向量。
+在图形的视角，我们可以把这个过程想象为图像的转换：输入一个图像，输出的是拉伸和/或旋转（甚至可能是反转）的图像。
 
-On the other hand, nothing prevents to interpret the matrix $A$ as a function that maps a vector to a scalar:
+图~\ref{fig:matrices}的第一行列举了一些关于矩阵的这种解释下的不同例子。
+
+此外，也可以把矩阵$A$解释为把矩阵映射为标量的函数：
+
 $$
 f(x) : \mathbb R^2 \rightarrow \mathbb R, \quad f(x) = x^\top A x = \sum\limits_i\sum\limits_j a_{ij}x_i x_j
 $$
 
-Note that the square is not very well defined for the vectors, so I cannot write $x^2$ as I wrote in the case of ordinary numbers. 
-For those who are not at ease with matrix multiplications, I highly recommend to revisit it right now and check that the expression $x^\top A x$ indeed produces a scalar value.
-To this end, we can explicitly put brackets $x^\top A x = (x^\top A) x$.
-Recall that in this particular example $x$ is a two-dimensional vector (stored in a $2\times 1$ matrix).
-Let us write all the matrix dimensions explicitly:
+注意向量的平方概念并没有很好地定义，所以不能像数字的平方一样写成$x^2$。
+要是你对矩阵乘法不熟练，我们来亲自动手检查一遍$x^\top A x$的结果是否是一个标量值。
+为此我们首先显式加上个括号：$x^\top A x = (x^\top A) x$。回想一下，这里的$x$是一个二维向量（保存在一个$2\times 1$的矩阵中）。我们来写下所有矩阵的维数：
 $$
 \underbrace{\underbrace{\left(\underbrace{x^\top}_{1\times 2} \times \underbrace{A}_{2\times 2}\right)}_{1\times 2} \times \underbrace{x}_{2\times 1}}_{1 \times 1}
 $$
 
-Returning to the cozy world of programmers, we can write the same quadratic function as follows:
+回到程序员的世界，我们可以像这样写出这个二次函数的代码：
 \begin{minted}[linenos=true]{cpp}
 float f(vector<float> x) {
     return x[0]*a11*x[0] + x[0]*a12*x[1] + x[1]*a21*x[0] + x[1]*a22*x[1];
@@ -1279,50 +1281,51 @@ float f(vector<float> x) {
 \end{figure}
 
 
-\subsection{What is a positive number?}
-Allow me to ask a very stupid question: what is a positive number?
-We have a great tool called the predicate ``greater than'' $>$.
-Do not be in a hurry to answer that the number $a$ is positive if and only if $a>0$, it would be too easy. Let us define the positivity as follows:
+\subsection{什么是正数？}
+请允许我问一个愚蠢的问题：什么是正数？
+我们有一个好用的工具叫做谓词“大于”$>$。
+别着急回答$a$当且仅当$a>0$时是正数，这太容易了。让我们来这么定义正性：
 
 \begin{definition}
-The real number $a$ is positive if and only if for all non-zero real $x\in\mathbb R,\ x\neq 0$ the condition $ax^2>0$ is satisfied.
+一个实数$a$是正的，当且仅当对于任意非零的实数$x\in\mathbb R,\ x\neq 0$，满足$ax^2>0$。
 \end{definition}
 
-This definition looks pretty awkward, but it applies perfectly to matrices:
+这个定义看起来挺蠢的，但是把它套用在矩阵上就非常优雅了：
 
 \begin{definition}
-The square matrix $A$ is called positive definite if for any non-zero $x$
-the condition $x^\top A x > 0$ is met, i.e. the corresponding quadratic form is strictly positive everywhere except at the origin.
+一个矩阵 $A$ 被称为正定的（positive definite），当且仅当对于任意非零 $x$，
+满足 $x^\top A x > 0$。 即，对应的二次型除原点外处处为正。
 \end{definition}
 
-What do we need the positivity for?
-As we have already mentioned, our main tool will be the minimization of quadratic functions. 
-It would be nice to be sure that the minimum exists!
-For example, the function $f(x) = - x^2$ clearly has no minimum, because the number -1 is not positive, 
-both branches of the parabola $f(x)$ look down.
-Positive definite matrices guarantee that the corresponding quadratic forms form a paraboloid with a (unique) minimum.
-Refer to the Figure~\ref{fig:matrices} for an illustration.
+我们为什么要费力定义什么是正的？
+如前所述，我们的主要工具是二次函数的最小化。
+我们一旦确定最小值是否存在就好办了！
+例如，函数$f(x) = - x^2$ 显然没有最小值。因为数字-1非正，抛物线 $f(x)$ 的俩分叉都往下走。
+正定矩阵保证了其二次型具有（唯一）最小值的抛物面。
+回顾图\ref{fig:matrices}来理解这个性质。
 
-Thus, we will work with a generalization of positive numbers, namely, positive definite matrices. 
-Moreover, in our particular case, the matrices will be symmetric!
-Note that quite often, when people talk about positive definiteness, they also imply symmetry.
-This can be partly explained by the following observation (optional for the understanding of the rest of the text):
+因此，我们推广正数到正定矩阵。
+此外在特殊情况下，矩阵还可能是对称的。
+通常人们谈论正定性时往往也暗含着对称性。
+下面给出了不完整的解释（选读）。
 
-\subsubsection{A digression on quadratic forms and matrix symmetry}
 
-Let us consider a quadratic form $x^\top M x$ for an arbitrary matrix $M$. 
-Next we add and subtract a half ot its transpose:
+
+\subsubsection{关于二次型和矩阵对称性的题外话}
+
+考虑任意矩阵 $M$ 的二次型 $x^\top M x$ 。
+接下来我们分别加减$M$转置的一半：
 $$
 M = \underbrace{\frac{1}{2} (M+M^\top)}_{:=M_s} + \underbrace{\frac{1}{2} (M-M^\top)}_{:=M_a} = M_s + M_a
 $$
 
-The matrix $M_s$ is symmetric: $M_s^\top = M_s$; the matrix $M_a$ is antisymmetric: $M_a^\top=-M_a$.
-A remarkable fact is that for any antisymmetric matrix the corresponding quadratic form is equal to zero everywhere. This follows from the following observation:
+矩阵 $M_s$ 是对称的： $M_s^\top = M_s$；矩阵 $M_a$ 是反对称的 $M_a^\top=-M_a$。
+一个重要的观察是，对于任意反对称矩阵，其二次型永远为零。解释如下：
 $$
 q = x^\top M_a x  = (x^\top M_a^\top x)^\top = - (x^\top M_a x)^\top = -q
 $$
-It means that the quadratic form $x^\top M_a x$ equals $q$ and $-q$ at the same time, and the only way to have this condition is to have $q\equiv 0$.
-From this fact it follows that for an arbitrary matrix $M$ the corresponding quadratic form $x^\top M x$ can be expressed through the symmetric matrix $M_s$ as well:
+这表明反对称矩阵的二次型 $x^\top M_a x$ 同时等于 $q$ 和 $-q$，因此 $q\equiv 0$。
+基于这个结论，对任意矩阵$M$的二次型$x^\top M x$可以等价与对称矩阵 $M_s$ 来表示：
 $$
 x^\top M x = x^\top (M_s + M_a) x = x^\top M_s x  + x^\top M_a x = x^\top M_s x.
 $$
@@ -1333,47 +1336,48 @@ $$
 \begin{figure}[ht]
 	\centering
 	\includegraphics[width=.3\linewidth]{img/minpb1d}
-	\caption{In 1d, the solution $x^*$ of the equation $ax - b = 0$ solves the minimization problem $\argmin\limits_x(ax^2-2bx)$ as well. }
+	\caption{在一维，方程$ax - b = 0$的解$x^*$ 即是最小化问题$\argmin\limits_x(ax^2-2bx)$的解}
 	\label{fig:min1d}
 \end{figure}
 
-Let us return to the unidimensional world for a while; I want to find the minimum of the function $f(x) = ax^2 - 2bx$. 
-The number $a$ is positive, therefore the minimum exists; to find it, we equate with the corresponding derivative with zero: $\frac{d}{dx}f(x) = 0$. 
-It is easy to differentiate a unidimensional quadratic function: $\frac{d}{dx}f(x) = 2ax - 2b = 0$; so our problem boils down to the equation $ax-b=0$.
-With some effort we can find the solution $x^* = b/a$. Figure~\ref{fig:min1d} illustrates the equivalence of two problems:
-the solution $x^*$ of the equation $ax-b=0$ coincides with the minimizer $\argmin\limits_x(ax^2 - 2bx)$.
+让我们先回到一维的世界。我想找到函数$f(x) = ax^2 - 2bx$的最小值。
+参数$a$是正的，因此最小值存在。为了找到最小值，我们让其导数为零： $\frac{d}{dx}f(x) = 0$。
+很容易对一个一维问题做微分：$\frac{d}{dx}f(x) = 2ax - 2b = 0$，因此我们的问题归结为了求解方程 $ax-b=0$。
+很容易就得到解为$x^* = b/a$。图~\ref{fig:min1d}显示了两个问题的等效性。
+方程$ax-b=0$的解与$\argmin\limits_x(ax^2 - 2bx)$的最小值重合。
 
-My point is that our main goal is to minimize quadratic functions (we are talking about least squares here!).
-The only thing that the humanity knows to do well is to solve linear equations, and it is great that one is equivalent to the other!
-The last thing is to check whether this equivalence holds for the case of $n>1$ variables.
-To do so, we will first prove three theorems.
+我们的主要目标是最小化二次函数（因为我们正在讨论的是最小二乘），而人类最擅长的事就是求解线性方程，令人振奋的是恰巧这两者是等价的！
+最后要做的就是，检查对于变量数$n>1$的高维情况这种等价是否通用。
+在此之前，我们先来证明三个定理。
 
-\subsection{Three theorems, or how to differentiate matrix expressions}
-The first theorem states that $1\times 1$ matrices are invariant w.r.t the transposition:
+
+\subsection{对矩阵式作微分的三个定理}
+第一个定理是$1\times 1$的矩阵转置后不变。
+
 \begin{theorem}
 $x\in \mathbb R \Rightarrow x^\top = x$
 \end{theorem}
-The proof is left as an exercise.
+证明：显然。
 
-The second theorem allows us to differentiate linear functions. In the case of a real function of one variable we know that
-$\frac{d}{dx}(bx) = b$, but what happens in the case of a real function of $n$ variables?
+第二个定理能让我们微分线性函数。在单变量的函数中我们知道$\frac{d}{dx}(bx) = b$，但对于$n$个变量的函数怎么微分呢？
 \begin{theorem}
 $\nabla b^\top x = \nabla x^\top b = b$
 \end{theorem}
-No surprises here, the same result in a matrix notation. The proof is straightforward, it suffices to write down the definition of the gradient:
+
+不出所料对于矩阵式做微分的结果也一样。证明也很简单，写出梯度的定义即可：
 $$\nabla(b^\top x) = \begin{bmatrix}\frac{\partial (b^\top x)}{\partial x_1} \\ \vdots \\ \frac{\partial (b^\top x)}{\partial x_n} \end{bmatrix} = \begin{bmatrix}\frac{\partial (b_1 x_1 + \dots + b_n x_n)}{\partial x_1} \\ \vdots \\ \frac{\partial (b_1 x_1 + \dots + b_n x_n)}{\partial x_n} \end{bmatrix}
 = \begin{bmatrix}b_1 \\ \vdots \\ b_n \end{bmatrix} = b$$
-Now applying the first theorem: $b^\top x = x^\top b$, and this concludes the proof.
+然后加上第一个定理的结论$b^\top x = x^\top b$即可完成证明。
 
-Now let us switch to quadratic forms.
-We know that in the case of a real function of one variable we have $\frac{d}{dx}(ax^2) = 2ax$, but what happens with the quadratic forms?
+现在我们回到矩阵的二次型。
+我们知道了对于单变量的函数$\frac{d}{dx}(ax^2) = 2ax$，但二次型的微分是怎样的？
 \begin{theorem}
 $\nabla (x^\top A x) = (A+A^\top)x$
 \end{theorem}
-Note that if $A$ is symmetric, then $\nabla (x^\top A x) = 2Ax$.
-The proof is straightforward, let us express the quadratic form as a double sum:
+假如 $A$ 是对称的，则$\nabla (x^\top A x) = 2Ax$。
+这个证明是很直接的，把二次型表示成双和的形式：
 $$x^\top A x = \sum\limits_i\sum\limits_j a_{ij} x_i x_j$$
-Now let us differentiate this double sum w.r.t the variable $x_i$:
+然后求这个双和形式对于$x_i$的导数：
 \begin{align*}
 \frac{\partial (x^\top A x)}{\partial x_i} 
 &= \frac{\partial}{\partial x_i}  \left(\sum\limits_{k_1}\sum\limits_{k_2} a_{k_1 k_2} x_{k_1} x_{k_2}\right) = \\
@@ -1385,36 +1389,33 @@ Now let us differentiate this double sum w.r.t the variable $x_i$:
 & = \sum\limits_{k_2} a_{ik_2}x_{k_2} + \sum\limits_{k_1} a_{k_1 i} x_{k_1} = \\
 & = \sum\limits_{j} (a_{ij} + a_{ji}) x_j \\
 \end{align*}
-I split the double sum into four cases, shown by the curly brackets.
-Each of these four cases is trivial to differentiate. 
-Now let us collect the partial derivatives  into a gradient vector:
+我们把双核分成了四种情况并用大括号标注起来，每种情况的求导都是很简单的。
+现在让我们将偏导数集合成一个梯度向量:
 $$\nabla(x^\top A x) = \begin{bmatrix}\frac{\partial (x^\top Ax)}{\partial x_1} \\ \vdots \\ \frac{\partial (x^\top A x)}{\partial x_n} \end{bmatrix}  = \begin{bmatrix}\sum\limits_{j} (a_{1j} + a_{j1}) x_j \\ \vdots \\ \sum\limits_{j} (a_{nj} + a_{jn}) x_j \end{bmatrix}  = (A+A^\top)x
 $$
 
-\subsection{Minimum of a quadratic function and the linear system}
-Recall that for a positive real number $a$ solving the equation
-$ax=b$ is equivalent to the quadratic function $\argmin\limits_x(ax^2 - 2bx)$ minimization.
-
-We want to show the corresponding connection in the case of a symmetric positive definite matrix $A$.
-So, we want to find the minimum quadratic function
+\subsection{二次函数和线性系统的最小值}
+回顾一下，对于一个正数$a$，求解方程$ax=b$等价于$\argmin\limits_x(ax^2 - 2bx)$。
+我们想展示这个结论在对称正定矩阵$A$上也是成立的。
+我们想找到二次函数的最小值：
 $$\argmin\limits_{x\in\mathbb R^n} (x^\top A x - 2b^\top x).$$
-As before, let us equate the derivative to zero:
+和前面一样，我们先令其导数为零：
 $$\nabla (x^\top A x - 2b^\top x) = \begin{bmatrix}0 \\ \vdots \\ 0 \end{bmatrix}.$$
-The gradient operator is linear, so we can rewrite our equation as follows:
+梯度算子是线性的，所以我们可以做如下拆解：
 $$\nabla (x^\top A x) - 2\nabla(b^\top x) = \begin{bmatrix}0 \\ \vdots \\ 0 \end{bmatrix}.$$
-Now let us apply the second and third differentiation theorems:
+现在我们应用前面提到的第二个和第三个微分定理：
 $$(A+A^\top)x - 2b = \begin{bmatrix}0 \\ \vdots \\ 0 \end{bmatrix}.$$
-Recall that $A$ is symmetric, let us divide the equation by 2, and we obtain the final linear system:
+因为 $A$ 是对称的，我们把上式除以2得到了如下线性系统：
 $$Ax = b.$$
-Hurray, passing from one variable to many, we have not lost a thing, and can effectively minimize quadratic functions!
+太棒了！我们从单变量推广到了多变量的形式，有效地最小化了二次函数。
 
 %$$\argmin (x^\top A x - 2b^\top x) = A^{-1}b$$
 
 \section{回到最小二乘}
-Finally we can move on to the main content of this course. Imagine that we have two points on a plane
-$(x_1, y_1)$ and $(x_2, y_2)$, and we want to find an equation for the line passing through these two points.
-The equation of the line can be written as $y = \alpha x + \beta$, that is, our task is to find the coefficients $\alpha$ and $\beta$.
-This is a secondary school exercise, let us write down the system of equations:
+最后我们可以回到本教程的核心议题。
+想象一个平面上有两个点$(x_1, y_1)$ and $(x_2, y_2)$，我们想找到一个方程来表达穿过这两个点的直线。
+这个直线的方程可以写为$y = \alpha x + \beta$的形式，这样我们的任务就变成了寻找参数$\alpha$ 和 $\beta$。
+这只是个中学练习题，我们列出方程：
 $$
 \left\{
 \begin{split}
@@ -1424,15 +1425,15 @@ $$
 \right.
 $$
 
-We have two equations with two unknowns ($\alpha$ and $\beta$), the rest is known.
-In general, there exists a unique solution. For convenience, let's rewrite the same system in a matrix form:
+我们有两个方程和两个未知数$\alpha$ 和 $\beta$。通常来讲这能得到唯一解。
+为了方便我们把这组方程重写为矩阵的形式：
 $$
 \underbrace{\begin{bmatrix}x_1  & 1 \\ x_2 & 1 \end{bmatrix}}_{:=A} 
 \underbrace{\begin{bmatrix} \alpha \\ \beta \end{bmatrix}}_{:=x} = \underbrace{\begin{bmatrix} y_1 \\ y_2 \end{bmatrix}}_{:=b}
 $$
-We obtain the equation $Ax = b$, which is trivially soved as $x^* = A^{-1}b$.
+我们得到了方程 $Ax = b$，它的解可简单写为 $x^* = A^{-1}b$.
 
-And now let us imagine that we have \textbf{three} points through which we need to draw a straight line:
+现在让我们有三个点，我们还是想用一条直线穿过它们：
 $$
 \left\{
 \begin{split}
@@ -1443,37 +1444,36 @@ $$
 \right.
 $$
 
-In a matrix form, this system can be expressed as follows:
+用矩阵的形式可以写成：
 $$
 \underbrace{\begin{bmatrix}x_1  & 1 \\ x_2 & 1 \\x_3 & 1 \end{bmatrix} }_{:= A\,(3\times 2)}
 \underbrace{\begin{bmatrix} \alpha \\ \beta \end{bmatrix}}_{:=x\,(2\times 1)} = \underbrace{\begin{bmatrix} y_1 \\ y_2 \\ y_3 \end{bmatrix}}_{:=b\, (3\times 1)}
 $$
 
-The matrix $A$ is rectangular, and thus it is not invertible!
-Sounds legit, we have only two variables and three equations, and in general this system has no solution.
-This is a perfectly normal situation in the real world where the data comes from noisy measurements,
-and we need to find the parameters $\alpha$ and $\beta$ that fit the measurements the best.
-We have already encountered this situation in \S\ref{sec:springscale}, where we calibrated a spring scale.
-However, back then the solution we have obtained was purely algebraic and very cumbersome. Let's try a more intuitive way.
+矩阵 $A$ 不是方阵，因此它是不可逆的！
+听起来很合理，我们有三个方程而只有两个未知数，这样的系统通常是无解的。
+但现实世界中数据来自有噪声的测量，这种情况是非常常见的。
+我们需要找到尽可能满足测量值的参数$\alpha$ 和 $\beta$。
+我们在\S\ref{sec:springscale}已经遇到过这种情况，并且成功校准了一把弹簧秤。
+然而我们已经获得的方法是纯代数的角度，非常繁琐。在这我们要尝试更直观的视角。
 
-Our system can be written down as follows:
+我们的系统可以写成如下格式：
 $$
 \alpha \underbrace{\begin{bmatrix}x_1  \\ x_2 \\x_3  \end{bmatrix} }_{:=\vec{i}}
 +\beta \underbrace{\begin{bmatrix}1 \\ 1 \\1 \end{bmatrix} }_{:=\vec{j}} = 
 \begin{bmatrix}y_1\\y_2\\y_3\end{bmatrix}
 $$
-Or, in more shortly,
+或者更加简化的表达式：
 $$
 \alpha \vec{i} + \beta\vec{j} = \vec{b}.
 $$
-The vectors $\vec i$, $\vec j$ and $\vec b$ are known, we are looking for (unknown) scalars $\alpha$ and $\beta$.
-Obviously, the linear combination $\alpha \vec{i} + \beta\vec{j}$ generates a plane, and if the vector $\vec b$
-does not lie in this plane, there is no exact solution; however, we are looking for an \textit{approximate} solution.
+向量$\vec i$，$\vec j$ 和 $\vec b$已知，我们来寻找未知的标量 $\alpha$ 和 $\beta$。
+显然，线性组合 $\alpha \vec{i} + \beta\vec{j}$ 张成了一个平面，若向量$\vec b$不在此平面上，这个问题就无精确解。然而，我们可以找到一个近似解。
 
-Let's denote the solution error as $\vec{e}(\alpha, \beta) :=  \alpha \vec{i} + \beta\vec{j} - \vec b$.
-Our goal is to find the values of parameters $\alpha$ and $\beta$ that minimize the norm of the vector $\vec{e}(\alpha, \beta)$. 
-In other words, the problem can be formulated as $\argmin\limits_{\alpha, \beta} \|\vec{e}(\alpha, \beta)\|$.
-Refer to Fig.~\ref{fig:error} for an illustration.
+我们把$\vec{e}(\alpha, \beta) :=  \alpha \vec{i} + \beta\vec{j} - \vec b$记作解的误差。
+我们的目标是找到一套最小化向量$\vec{e}(\alpha, \beta)$范数的参数$\alpha$ 和 $\beta$
+换句话说，这个问题被表述为 $\argmin\limits_{\alpha, \beta} \|\vec{e}(\alpha, \beta)\|$。
+参考图~\ref{fig:error}的示意。
 
 \begin{figure}[ht]
 	\centering
@@ -1483,10 +1483,11 @@ Refer to Fig.~\ref{fig:error} for an illustration.
 	\label{fig:error}
 \end{figure}
 
-But wait, where are the least squares? Just a second. The square root function $\sqrt{\cdot}$ is monotonous, so $\argmin\limits_{\alpha, \beta} \|\vec{e}(\alpha, \beta)\|$ = $\argmin\limits_{\alpha, \beta} \|\vec{e}(\alpha, \beta)\|^2$!
+等一下！最小二乘在哪呢？稍安勿躁。因为平方根函数$\sqrt{\cdot}$ 是单调的，我们可以等效这个问题为：
+$\argmin\limits_{\alpha, \beta} \|\vec{e}(\alpha, \beta)\|$ = $\argmin\limits_{\alpha, \beta} \|\vec{e}(\alpha, \beta)\|^2$!
 
-It is quite obvious that the norm of the error vector is minimized when it is orthogonal to the plane generated by the vectors $\vec i$ and $\vec j$.
-We can express it by equating corresponding dot products to zero:
+很显然，当误差向量垂直于$\vec i$ 和 $\vec j$张成的平面时，其范数最小。
+我们可以把垂直关系表述为点乘为零：
 $$
 \left\{
 \begin{split}\vec{i}^\top \vec{e}(\alpha, \beta) &= 0\\
@@ -1495,14 +1496,14 @@ $$
 \right.
 $$
 
-We can write down the same system in a matrix form:
+我们可以把这个系统写成完整的矩阵形式：
 $$
 \begin{bmatrix}x_1 & x_2 & x_3 \\ 1 & 1 & 1 \end{bmatrix}
 \left(\alpha \begin{bmatrix}x_1  \\ x_2 \\x_3  \end{bmatrix}
 +\beta \begin{bmatrix}1 \\ 1 \\1 \end{bmatrix} - 
 \begin{bmatrix}y_1\\y_2\\y_3\end{bmatrix}\right) = \begin{bmatrix}0\\0\end{bmatrix}
 $$
-or
+或
 $$
 \begin{bmatrix}x_1 & x_2 & x_3 \\ 1 & 1 & 1 \end{bmatrix}
 \left(
@@ -1511,27 +1512,28 @@ $$
 \begin{bmatrix} y_1 \\ y_2 \\ y_3 \end{bmatrix}
 \right) = \begin{bmatrix}0\\0\end{bmatrix}
 $$
-But we won't stop there, because the expression can be further shortened:
+但是我们不会停在这里，因为这个表达可以进一步缩短：
 $$
 A^\top (Ax - b)= \begin{bmatrix}0\\0\end{bmatrix}
 $$
-And the very last transformation:
+最后整理一下：
 $$
 A^\top Ax = A^\top b.
 $$
-Let us do a sanity check. Matrix $A$ is $3\times 2$, thus  $A^\top A$ is $2\times 2$. Matrix $b$ is $3\times 1$, so the matrix $A^\top b$ is $2\times 1$.
-Therefore, in a general case the matrix $A^\top A$ can be invertible! Moreover, $A^\top A$ has a couple more nice properties.
+来做个检查：矩阵 $A$ 是 $3\times 2$的，因此  $A^\top A$ 是 $2\times 2$的。 矩阵 $b$ 是 $3\times 1$的, 所以矩阵 $A^\top b$ 是 $2\times 1$的。
+因此在非退化情况下矩阵$A^\top A$可逆。此外，$A^\top A$还有一些更好的性质。
+
 
 \begin{theorem}
-$A^\top A$ is symmetric.
+$A^\top A$ 是对称的。
 \end{theorem}
-It is very easy to show:
+证明非常容易：
 $$
 (A^\top A)^\top = A^\top (A^\top)^\top = A^\top A.
 $$
 
 \begin{theorem}
-	$A^\top A$ positive semidefinite: $\forall x\in \mathbb R^n\quad x^\top A^\top A x \geq 0.$
+	$A^\top A$ 半正定的： $\forall x\in \mathbb R^n\quad x^\top A^\top A x \geq 0.$
 \end{theorem}
 It follows from the fact that $x^\top A^\top A x = (A x)^\top A x > 0$.
 Moreover, $A^\top A$ is positive definite in the case where $A$ has linearly independent columns (rank $A$ is equal to the number of the variables in the system).
